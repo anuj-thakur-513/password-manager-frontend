@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 const SignUpForm = () => {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -40,8 +42,14 @@ const SignUpForm = () => {
           </p>
         )}
         <div className="d-flex justify-content-center">
-          <button type="submit" className="btn btn-primary w-25">
+          <button type="submit" className="btn btn-primary w-50">
             Sign Up
+          </button>
+        </div>
+        <div className="d-flex justify-content-center mt-2">
+          <button type="button" className="btn btn-outline-success w-50">
+            <FontAwesomeIcon icon={faGoogle} className="me-2" />
+            Sign Up with Google
           </button>
         </div>
       </form>
