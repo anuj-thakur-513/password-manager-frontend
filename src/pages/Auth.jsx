@@ -1,10 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import LoginForm from "../components/LoginForm";
 import SignUpForm from "../components/SignupForm";
+import UserAuthContext from "../context/UserAuthContext.js";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const userAuth = useContext(UserAuthContext);
+  const checkAuth = async () => {
+    try {
+      const res = await axios.get("/api/v1/user/checkAuth");
+      if (res.status === 200) {
+        userAuth.setIsAuthenticated(true);
+      } else {
+        userAuth.setIsAuthenticated(false);
+      }
+    } catch (error) {
+      userAuth.setIsAuthenticated(false);
+    }
+  };
+  useEffect(() => {
+    const fetchAuth = async () => {
+      await checkAuth();
+    };
+    fetchAuth();
+  }, []);
 
   const toggleSignIn = () => {
     setIsLogin((isLogin) => !isLogin);

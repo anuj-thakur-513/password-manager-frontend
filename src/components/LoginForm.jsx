@@ -4,6 +4,13 @@ import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState(null);
+  const email = useRef(null);
+  const password = useRef(null);
+
+  const handleLoginWithGoogle = () => {
+    window.location.href = "http://localhost:8000/api/v1/user/google/auth";
+  };
+
   return (
     <div className="vw-100 container d-flex justify-content-center align-items-center">
       <form className="w-50">
@@ -11,6 +18,7 @@ const LoginForm = () => {
         <div className="mb-3">
           <input
             type="email"
+            ref={email}
             className="form-control"
             placeholder="Enter email"
           />
@@ -18,6 +26,7 @@ const LoginForm = () => {
         <div className="mb-3">
           <input
             type="password"
+            ref={password}
             className="form-control w-100"
             placeholder="Enter password"
           />
@@ -33,7 +42,11 @@ const LoginForm = () => {
           </button>
         </div>
         <div className="d-flex justify-content-center mt-2">
-          <button type="button" className="btn btn-outline-success w-50">
+          <button
+            type="button"
+            className="btn btn-outline-success w-50"
+            onClick={handleLoginWithGoogle}
+          >
             <FontAwesomeIcon icon={faGoogle} className="me-2" />
             Login with Google
           </button>
