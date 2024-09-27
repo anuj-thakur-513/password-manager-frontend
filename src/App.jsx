@@ -1,13 +1,21 @@
+import { Suspense, lazy } from "react";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Header from "./components/Header";
 import "./index.css";
-import Auth from "./pages/Auth";
+
+// Lazy load
+const Auth = lazy(() => import("./pages/Auth"));
 
 function App() {
   return (
     <>
       <Header />
-      <Auth />
+      <Suspense fallback={null}>
+        <Routes>
+          <Route path="/" element={<Auth />} />
+        </Routes>
+      </Suspense>
     </>
   );
 }
