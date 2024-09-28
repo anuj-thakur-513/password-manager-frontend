@@ -1,21 +1,25 @@
 import { useRef, useState } from "react";
 import { EMAIL_REGEX } from "../../constants";
+import axios from "axios";
 
 const Signup = ({ setIsLogin, setShowOtpForm, setEnteredEmail }) => {
+  const nameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    const name = nameRef.current.value.trim();
     const email = emailRef.current.value.trim();
     const password = passwordRef.current.value.trim();
     const confirmPassword = confirmPasswordRef.current.value;
 
-    if (!email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword) {
       setError("Please fill all the fields");
       return;
     }
@@ -32,8 +36,23 @@ const Signup = ({ setIsLogin, setShowOtpForm, setEnteredEmail }) => {
 
     setIsEmailValid(true);
     setEnteredEmail(email);
-    // TODO: handle SIGNUP API call
-    setShowOtpForm(true);
+
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/v1/user/signup", {
+        name,
+        email,
+        password,
+      });
+      if (res.status === 201) {
+        setShowOtpForm(true);
+      }
+    } catch (error) {
+      console.log(error);
+      setError(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleShowPassword = () => {
@@ -47,6 +66,13 @@ const Signup = ({ setIsLogin, setShowOtpForm, setEnteredEmail }) => {
       </div>
       <div className="form-group">
         <div className="form-field">
+          <label className="form-label">Name</label>
+          <input
+            ref={nameRef}
+            placeholder="John Doe"
+            type="text"
+            className="input max-w-full focus:border-blue-500"
+          />
           <label className="form-label">Email address</label>
           <input
             ref={emailRef}
@@ -116,23 +142,37 @@ const Signup = ({ setIsLogin, setShowOtpForm, setEnteredEmail }) => {
         )}
         <div className="form-field pt-5">
           <div className="form-control justify-between">
-            <button
-              type="button"
-              className="btn btn-primary w-full hover:bg-blue-700 duration-200"
-              onClick={handleSubmit}
-            >
-              Sign up
-            </button>
+            {!loading ? (
+              <button
+                type="button"
+                className="btn btn-primary w-full hover:bg-blue-700 duration-200"
+                onClick={handleSubmit}
+              >
+                Sign up
+              </button>
+            ) : (
+              <div className="flex justify-center w-full pb-5">
+                <div className="spinner-dot-pulse">
+                  <div className="spinner-pulse-dot"></div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="form-field">
           <div className="form-control justify-center">
             <a
-              className="link link-underline-hover link-primary text-sm"
-              onClick={() => {
-                setIsLogin(true);
-              }}
+              className={`link link-underline-hover link-primary text-sm ${
+                loading ? "cursor-not-allowed" : "cursor-pointer"
+              }`}
+              onClick={
+                loading
+                  ? null
+                  : () => {
+                      setIsLogin(true);
+                    }
+              }
             >
               Already a User? Sign in.
             </a>
