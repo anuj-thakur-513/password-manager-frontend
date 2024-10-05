@@ -8,6 +8,7 @@ const ResetPassword = () => {
   const [email, setEmail] = useState(null);
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async () => {
     const enteredEmail = emailRef.current.value.trim();
@@ -15,9 +16,15 @@ const ResetPassword = () => {
       setIsEmailValid(false);
       return;
     }
-    await axios.post("/api/v1/user/generateOtp", {
-      isVerificationEmail: false,
-    });
+    try {
+      await axios.post("/api/v1/user/generateOtp", {
+        isVerificationEmail: false,
+      });
+    } catch (error) {
+      if (error.response.status === 429) {
+        setError("Request Limit Reached! Please try again after 10 minutes.");
+      }
+    }
     setEmail(enteredEmail);
     setShowOtpModal(true);
   };
@@ -60,6 +67,7 @@ const ResetPassword = () => {
               </div>
             </div>
           </div>
+          {error && <div className="text-red-500 mt-4">{error}</div>}
         </div>
       </div>
       {showOtpModal && <OtpModal email={email} />}
