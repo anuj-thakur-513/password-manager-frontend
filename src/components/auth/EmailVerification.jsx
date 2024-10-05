@@ -11,7 +11,7 @@ const EmailVerification = ({ email }) => {
           Enter the 6-digit verification code that was sent to {email}.
         </p>
       </header>
-      <OtpForm />
+      <OtpForm isVerificationEmail={true} />
     </div>
   );
 };

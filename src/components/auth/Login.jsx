@@ -1,14 +1,22 @@
 import { useRef, useState } from "react";
 import { EMAIL_REGEX } from "../../constants";
+import axios from "axios";
 
-const Login = ({ setIsLogin, setShowResetPasswordForm, setEnteredEmail }) => {
+const Login = ({
+  setIsLogin,
+  setShowOtpForm,
+  setShowResetPasswordForm,
+  setEnteredEmail,
+}) => {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
+    setLoading(true);
     event.preventDefault();
     const email = emailRef.current.value.trim();
     const password = passwordRef.current.value.trim();
@@ -24,7 +32,26 @@ const Login = ({ setIsLogin, setShowResetPasswordForm, setEnteredEmail }) => {
     }
     setIsEmailValid(true);
     setEnteredEmail(email);
-    // TODO: handle LOGIN API call
+    try {
+      const res = await axios.post("/api/v1/user/login", {
+        email,
+        password,
+      });
+      if (res.status === 200) {
+        const user = res?.data?.data?.updatedUser;
+        window.localStorage.setItem("user", JSON.stringify(user));
+        if (!user.isVerified) {
+          await axios.post("/api/v1/user/generateOtp", {
+            isVerificationEmail: true,
+          });
+          setShowOtpForm(true);
+        }
+      }
+    } catch (e) {
+      setError("Please enter correct credentials");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleShowPassword = () => {
@@ -110,13 +137,21 @@ const Login = ({ setIsLogin, setShowResetPasswordForm, setEnteredEmail }) => {
         )}
         <div className="form-field pt-5">
           <div className="form-control justify-between">
-            <button
-              type="button"
-              className="btn btn-primary w-full hover:bg-blue-700 duration-200"
-              onClick={handleSubmit}
-            >
-              Sign in
-            </button>
+            {!loading ? (
+              <button
+                type="button"
+                className="btn btn-primary w-full hover:bg-blue-700 duration-200"
+                onClick={handleSubmit}
+              >
+                Sign in
+              </button>
+            ) : (
+              <div className="flex justify-center w-full pb-5">
+                <div className="spinner-dot-pulse">
+                  <div className="spinner-pulse-dot"></div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

@@ -45,6 +45,9 @@ const Signup = ({ setIsLogin, setShowOtpForm, setEnteredEmail }) => {
         password,
       });
       if (res.status === 201) {
+        await axios.post("/api/v1/user/generateOtp", {
+          isVerificationEmail: true,
+        });
         setShowOtpForm(true);
       }
     } catch (error) {

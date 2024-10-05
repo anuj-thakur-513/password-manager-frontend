@@ -12,7 +12,7 @@ const OtpModal = ({ email }) => {
           <br />
           <span className="font-medium">{email}</span>
         </p>
-        <OtpForm />
+        <OtpForm isVerificationEmail={false} />
       </div>
     </div>
   );

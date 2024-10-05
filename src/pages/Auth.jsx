@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Login from "../components/auth/Login";
 import Signup from "../components/auth/Signup";
 import EmailVerification from "../components/auth/EmailVerification";
@@ -8,28 +8,44 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showOtpForm, setShowOtpForm] = useState(false);
   const [enteredEmail, setEnteredEmail] = useState(null);
+  const [showConfirmMessage, setShowConfirmMessage] = useState(false);
   const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
 
+  useEffect(() => {
+    const user = JSON.parse(window.localStorage.getItem("user"));
+    if (user && !user.isVerified) {
+      setShowConfirmMessage(true);
+    }
+  }, []);
+
   return (
-    <div className="mt-52">
-      {showOtpForm ? (
-        <EmailVerification email={enteredEmail} />
-      ) : showResetPasswordForm ? (
-        <ResetPassword />
-      ) : isLogin ? (
-        <Login
-          setIsLogin={setIsLogin}
-          setShowOtpForm={setShowOtpForm}
-          setShowResetPasswordForm={setShowResetPasswordForm}
-        />
-      ) : (
-        <Signup
-          setIsLogin={setIsLogin}
-          setShowOtpForm={setShowOtpForm}
-          setEnteredEmail={setEnteredEmail}
-        />
-      )}
-    </div>
+    <>
+      <div className="mt-52">
+        {showOtpForm ? (
+          <EmailVerification email={enteredEmail} />
+        ) : showResetPasswordForm ? (
+          <ResetPassword />
+        ) : isLogin ? (
+          <Login
+            setIsLogin={setIsLogin}
+            setShowOtpForm={setShowOtpForm}
+            setShowResetPasswordForm={setShowResetPasswordForm}
+            setEnteredEmail={setEnteredEmail}
+          />
+        ) : (
+          <Signup
+            setIsLogin={setIsLogin}
+            setShowOtpForm={setShowOtpForm}
+            setEnteredEmail={setEnteredEmail}
+          />
+        )}
+        {showConfirmMessage && !showOtpForm && !showResetPasswordForm && (
+          <h2 className="text-warning flex justify-center mt-4">
+            ⚠️ Re-login and verify your account to proceed
+          </h2>
+        )}
+      </div>
+    </>
   );
 };
 

@@ -1,8 +1,10 @@
+import axios from "axios";
 import { useState, useRef, useEffect } from "react";
 
-const OtpForm = () => {
+const OtpForm = ({ isVerificationEmail }) => {
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [isResendDisabled, setIsResendDisabled] = useState(true);
+  const [error, setError] = useState(null);
   const [timer, setTimer] = useState(30); // 30-second countdown
   const inputRefs = useRef([]);
 
@@ -53,17 +55,35 @@ const OtpForm = () => {
     inputRefs.current[5].focus();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const otpValue = otp.join("");
     console.log("OTP submitted:", otpValue);
-    // TODO: API call for verification
+    const res = await axios.patch("/api/v1/user/verifyOtp", {
+      enteredOtp: otpValue,
+    });
+
+    if (res.status === 200) {
+      const user = JSON.parse(window.localStorage.getItem("user"));
+      user.isVerified = true;
+      window.localStorage.setItem("user", JSON.stringify(user));
+    }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (!isResendDisabled) {
-      console.log("Resending OTP");
-      // TODO: resend OTP
+      try {
+        const res = await axios.post("/api/v1/user/generateOtp", {
+          isVerificationEmail,
+        });
+        if (res.status === 200) {
+          setError(null);
+        }
+      } catch (error) {
+        if (error.response.status === 429) {
+          setError("Request Limit Reached! Please try again after 10 minutes.");
+        }
+      }
       setIsResendDisabled(true);
       setTimer(30);
     }
@@ -107,6 +127,7 @@ const OtpForm = () => {
           Resend {isResendDisabled && `(${timer}s)`}
         </button>
       </div>
+      {error && <div className="text-red-500 mt-4">{error}</div>}
     </div>
   );
 };
