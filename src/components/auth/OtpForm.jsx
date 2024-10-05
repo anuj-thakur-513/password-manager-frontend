@@ -1,10 +1,15 @@
 import axios from "axios";
 import { useState, useRef, useEffect } from "react";
 
-const OtpForm = ({ isVerificationEmail }) => {
+const OtpForm = ({
+  isVerificationEmail,
+  setOtpVerified = (val) => {},
+  email = null,
+}) => {
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(30); // 30-second countdown
   const inputRefs = useRef([]);
 
@@ -56,17 +61,38 @@ const OtpForm = ({ isVerificationEmail }) => {
   };
 
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     const otpValue = otp.join("");
     console.log("OTP submitted:", otpValue);
-    const res = await axios.patch("/api/v1/user/verifyOtp", {
-      enteredOtp: otpValue,
-    });
-
-    if (res.status === 200) {
-      const user = JSON.parse(window.localStorage.getItem("user"));
-      user.isVerified = true;
-      window.localStorage.setItem("user", JSON.stringify(user));
+    let res;
+    try {
+      if (isVerificationEmail) {
+        res = await axios.patch("/api/v1/user/verifyOtp", {
+          enteredOtp: otpValue,
+        });
+      } else {
+        res = await axios.patch("/api/v1/user/verify-reset-otp", {
+          enteredOtp: otpValue,
+          email,
+        });
+      }
+      if (res.status === 200) {
+        const user = JSON.parse(window.localStorage.getItem("user"));
+        if (user) {
+          user.isVerified = true;
+          window.localStorage.setItem("user", JSON.stringify(user));
+        }
+        setOtpVerified(true);
+        if (isVerificationEmail) {
+          window.location.href = "/home";
+        }
+      }
+    } catch (e) {
+      setError("OTP Verification failed");
+      setOtpVerified(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,12 +133,20 @@ const OtpForm = ({ isVerificationEmail }) => {
           ))}
         </div>
         <div className="max-w-[260px] mx-auto mt-6">
-          <button
-            type="submit"
-            className="w-full btn btn-primary hover:bg-blue-700 duration-200"
-          >
-            Verify Account
-          </button>
+          {!loading ? (
+            <button
+              type="submit"
+              className="w-full btn btn-primary hover:bg-blue-700 duration-200"
+            >
+              Verify Account
+            </button>
+          ) : (
+            <div className="flex justify-center w-full pb-5">
+              <div className="spinner-dot-pulse">
+                <div className="spinner-pulse-dot"></div>
+              </div>
+            </div>
+          )}
         </div>
       </form>
       <div className="text-sm text-gray-400 mt-4">

@@ -45,6 +45,8 @@ const Login = ({
             isVerificationEmail: true,
           });
           setShowOtpForm(true);
+        } else {
+          window.location.href = "/home";
         }
       }
     } catch (e) {

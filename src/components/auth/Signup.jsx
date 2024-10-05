@@ -45,6 +45,8 @@ const Signup = ({ setIsLogin, setShowOtpForm, setEnteredEmail }) => {
         password,
       });
       if (res.status === 201) {
+        const user = res?.data?.data?.updatedUser;
+        window.localStorage.setItem("user", JSON.stringify(user));
         await axios.post("/api/v1/user/generateOtp", {
           isVerificationEmail: true,
         });

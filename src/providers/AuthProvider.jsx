@@ -14,6 +14,9 @@ const AuthProvider = ({ children }) => {
           ) {
             window.location.href = "/";
           }
+          if (res?.data?.data?.isVerified && window.location.pathname === "/") {
+            window.location.href = "/home";
+          }
         }
       } catch (e) {
         localStorage.removeItem("user");

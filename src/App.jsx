@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import Header from "./components/Header";
 import "./index.css";
+import Home from "./pages/Home";
 
 // Lazy load
 const Auth = lazy(() => import("./pages/Auth"));
@@ -21,6 +22,7 @@ function App() {
       <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<Auth />} />
+          <Route path="/home" element={<Home />} />
         </Routes>
       </Suspense>
     </>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Login from "../components/auth/Login";
 import Signup from "../components/auth/Signup";
 import EmailVerification from "../components/auth/EmailVerification";
-import ResetPassword from "../components/auth/ResetPassword";
+import RequestOtp from "../components/auth/RequestOtp";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -24,7 +24,7 @@ const Auth = () => {
         {showOtpForm ? (
           <EmailVerification email={enteredEmail} />
         ) : showResetPasswordForm ? (
-          <ResetPassword />
+          <RequestOtp />
         ) : isLogin ? (
           <Login
             setIsLogin={setIsLogin}
