@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { EMAIL_REGEX } from "../../constants";
 import OtpModal from "../modals/OtpModal";
+import axios from "axios";
 
 const ResetPassword = () => {
   const emailRef = useRef(null);
@@ -8,13 +9,15 @@ const ResetPassword = () => {
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [showOtpModal, setShowOtpModal] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const enteredEmail = emailRef.current.value.trim();
     if (!enteredEmail || !EMAIL_REGEX.test(enteredEmail)) {
       setIsEmailValid(false);
       return;
     }
-    // TODO: send BE request to generate an OTP
+    await axios.post("/api/v1/user/generateOtp", {
+      isVerificationEmail: false,
+    });
     setEmail(enteredEmail);
     setShowOtpModal(true);
   };
