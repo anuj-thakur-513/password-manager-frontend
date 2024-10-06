@@ -4,16 +4,17 @@ import ResetPassword from "../auth/ResetPassword";
 
 const OtpModal = ({ email }) => {
   const [otpVerified, setOtpVerified] = useState(false);
+  const [otp, setOtp] = useState(null);
 
   return (
     <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="modal-content bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
         {otpVerified ? (
           <>
-            <h2 className="text-2xl font-semibold text-white mb-4 text-center">
+            <h3 className="text-2xl font-semibold text-white mb-4 text-center">
               Reset Password
-            </h2>
-            <ResetPassword email={email} />
+            </h3>
+            <ResetPassword email={email} otp={otp} />
           </>
         ) : (
           <>
@@ -28,6 +29,7 @@ const OtpModal = ({ email }) => {
             <OtpForm
               isVerificationEmail={false}
               setOtpVerified={setOtpVerified}
+              setOtpValue={setOtp}
               email={email}
             />{" "}
           </>

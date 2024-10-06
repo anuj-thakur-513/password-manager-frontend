@@ -1,20 +1,15 @@
 import axios from "axios";
 import { useRef, useState } from "react";
 
-const ResetPassword = ({ email }) => {
+const ResetPassword = ({ email, otp }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [isOldPasswordVisible, setIsOldPasswordVisible] = useState(false);
   const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
-  const oldPasswordRef = useRef(null);
   const newPasswordRef = useRef(null);
   const confirmPasswordRef = useRef(null);
 
-  const handleShowOldPassword = () => {
-    setIsOldPasswordVisible(!isOldPasswordVisible);
-  };
   const handleShowNewPassword = () => {
     setIsNewPasswordVisible(!isNewPasswordVisible);
   };
@@ -25,16 +20,10 @@ const ResetPassword = ({ email }) => {
   const handleSubmit = async (event) => {
     setLoading(true);
     event.preventDefault();
-    const oldPassword = oldPasswordRef.current.value.trim();
     const newPassword = newPasswordRef.current.value.trim();
     const confirmPassword = confirmPasswordRef.current.value;
-    if (!oldPassword || !newPassword || !confirmPassword) {
+    if (!newPassword || !confirmPassword) {
       setError("Please fill all the fields");
-      setLoading(false);
-      return;
-    }
-    if (newPassword === oldPassword) {
-      setError("New password cannot be same as old password");
       setLoading(false);
       return;
     }
@@ -44,10 +33,10 @@ const ResetPassword = ({ email }) => {
       return;
     }
     try {
-      const res = await axios.patch("/api/v1/user/resetPassword", {
-        email,
-        oldPassword,
-        newPassword,
+      const res = await axios.patch("/api/v1/user/reset-otp-password", {
+        email: email,
+        otp: otp,
+        newPassword: newPassword,
       });
       if (res.status === 200) {
         window.location.href = "/";
@@ -62,45 +51,9 @@ const ResetPassword = ({ email }) => {
   return (
     <div className="mx-auto flex w-full max-w-sm flex-col gap-6">
       <div className="flex flex-col items-center">
-        <h1 className="text-3xl font-semibold">Sign In</h1>
+        <h1 className="text-3xl font-semibold">Set new Password</h1>
       </div>
       <div className="form-group">
-        <div className="form-field">
-          <label className="form-label">Enter Old Password</label>
-          <div className="form-control">
-            <input
-              ref={oldPasswordRef}
-              placeholder="Enter your old password"
-              type={isOldPasswordVisible ? "text" : "password"}
-              className="input max-w-full focus:border-blue-500"
-            />
-            <span
-              className="absolute inset-y-0 right-4 inline-flex items-center cursor-pointer"
-              onClick={handleShowOldPassword}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-content3"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-            </span>
-          </div>
-        </div>
         <div className="form-field">
           <label className="form-label">Enter new Password</label>
           <div className="form-control">

@@ -3,7 +3,8 @@ import { useState, useRef, useEffect } from "react";
 
 const OtpForm = ({
   isVerificationEmail,
-  setOtpVerified = (val) => {},
+  setOtpVerified = () => {},
+  setOtpValue = () => {},
   email = null,
 }) => {
   const [otp, setOtp] = useState(new Array(6).fill(""));
@@ -84,12 +85,14 @@ const OtpForm = ({
           window.localStorage.setItem("user", JSON.stringify(user));
         }
         setOtpVerified(true);
+        setOtpValue(otpValue);
         if (isVerificationEmail) {
           window.location.href = "/home";
         }
       }
     } catch (e) {
       setError("OTP Verification failed");
+      setOtpValue(null);
       setOtpVerified(false);
     } finally {
       setLoading(false);
