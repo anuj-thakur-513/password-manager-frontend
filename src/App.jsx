@@ -1,7 +1,7 @@
 import { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import Header from "./components/Header";
@@ -16,7 +16,7 @@ axios.defaults.withCredentials = true;
 
 function App() {
   return (
-    <>
+    <div className="bg-global-gradient">
       <Header />
       <ToastContainer />
       <Suspense fallback={null}>
@@ -25,7 +25,7 @@ function App() {
           <Route path="/home" element={<Home />} />
         </Routes>
       </Suspense>
-    </>
+    </div>
   );
 }
 

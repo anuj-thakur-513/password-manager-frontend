@@ -3,6 +3,7 @@ import Login from "../components/auth/Login";
 import Signup from "../components/auth/Signup";
 import EmailVerification from "../components/auth/EmailVerification";
 import RequestOtp from "../components/auth/RequestOtp";
+import Hero from "../components/Hero";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,6 +11,7 @@ const Auth = () => {
   const [enteredEmail, setEnteredEmail] = useState(null);
   const [showConfirmMessage, setShowConfirmMessage] = useState(false);
   const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
+  const [showAuthForms, setShowAuthForms] = useState(false);
 
   useEffect(() => {
     const user = JSON.parse(window.localStorage.getItem("user"));
@@ -18,33 +20,43 @@ const Auth = () => {
     }
   }, []);
 
+  const handleGetStarted = () => {
+    setShowAuthForms(true);
+  };
+
   return (
     <>
-      <div className="mt-52">
-        {showOtpForm ? (
-          <EmailVerification email={enteredEmail} />
-        ) : showResetPasswordForm ? (
-          <RequestOtp />
-        ) : isLogin ? (
-          <Login
-            setIsLogin={setIsLogin}
-            setShowOtpForm={setShowOtpForm}
-            setShowResetPasswordForm={setShowResetPasswordForm}
-            setEnteredEmail={setEnteredEmail}
-          />
-        ) : (
-          <Signup
-            setIsLogin={setIsLogin}
-            setShowOtpForm={setShowOtpForm}
-            setEnteredEmail={setEnteredEmail}
-          />
-        )}
-        {showConfirmMessage && !showOtpForm && !showResetPasswordForm && (
-          <h2 className="text-warning flex justify-center mt-4">
-            ⚠️ Re-login and verify your account to proceed
-          </h2>
-        )}
-      </div>
+      {showAuthForms ? (
+        <div
+          className={`mt-52 h-screen ${showAuthForms ? "animate-slideIn" : ""}`}
+        >
+          {showOtpForm ? (
+            <EmailVerification email={enteredEmail} />
+          ) : showResetPasswordForm ? (
+            <RequestOtp />
+          ) : isLogin ? (
+            <Login
+              setIsLogin={setIsLogin}
+              setShowOtpForm={setShowOtpForm}
+              setShowResetPasswordForm={setShowResetPasswordForm}
+              setEnteredEmail={setEnteredEmail}
+            />
+          ) : (
+            <Signup
+              setIsLogin={setIsLogin}
+              setShowOtpForm={setShowOtpForm}
+              setEnteredEmail={setEnteredEmail}
+            />
+          )}
+          {showConfirmMessage && !showOtpForm && !showResetPasswordForm && (
+            <h2 className="text-warning flex justify-center mt-4">
+              ⚠️ Re-login and verify your account to proceed
+            </h2>
+          )}
+        </div>
+      ) : (
+        <Hero handleGetStarted={handleGetStarted} />
+      )}
     </>
   );
 };

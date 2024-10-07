@@ -34,7 +34,7 @@ const Header = () => {
   };
 
   return (
-    <div className="navbar navbar-glass">
+    <div className="navbar navbar-glass sticky top-0 z-50 bg-transparent">
       <div className="navbar-start">
         <a className="navbar-item" onClick={() => {}}>
           Password Manager
