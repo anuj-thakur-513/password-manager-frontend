@@ -65,7 +65,7 @@ const AddPassword = () => {
   };
 
   return (
-    <section className="bg-gray-2 rounded-xl">
+    <section className="bg-gray-2 rounded-xl backdrop-blur-lg bg-opacity-50">
       <div className="p-8 shadow-lg">
         <form className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

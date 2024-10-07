@@ -12,7 +12,7 @@ const Home = () => {
   return (
     <>
       <div className="flex flex-col items-center mt-10 h-screen">
-        <div className="tabs tabs-boxed gap-1">
+        <div className="tabs tabs-boxed gap-1 backdrop-blur-lg bg-opacity-55">
           <input
             type="radio"
             id="tab-13"
