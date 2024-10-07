@@ -28,7 +28,7 @@ const Auth = () => {
     <>
       {showAuthForms ? (
         <div
-          className={`mt-52 h-screen ${showAuthForms ? "animate-slideIn" : ""}`}
+          className={`mt-10 h-screen ${showAuthForms ? "animate-slideIn" : ""}`}
         >
           {showOtpForm ? (
             <EmailVerification email={enteredEmail} />

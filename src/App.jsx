@@ -16,16 +16,18 @@ axios.defaults.withCredentials = true;
 
 function App() {
   return (
-    <div className="bg-global-gradient">
-      <Header />
-      <ToastContainer />
-      <Suspense fallback={null}>
-        <Routes>
-          <Route path="/" element={<Auth />} />
-          <Route path="/home" element={<Home />} />
-        </Routes>
-      </Suspense>
-    </div>
+    <>
+      <div className="bg-global-gradient">
+        <Header />
+        <ToastContainer />
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/" element={<Auth />} />
+            <Route path="/home" element={<Home />} />
+          </Routes>
+        </Suspense>
+      </div>
+    </>
   );
 }
 

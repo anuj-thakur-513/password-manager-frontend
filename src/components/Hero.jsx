@@ -32,10 +32,15 @@ const Hero = ({ handleGetStarted }) => {
           Say goodbye to password anxiety. Manage all your passwords in one
           place with top-notch security and a sleek interface.
         </p>
+        <p className="text-lg md:text-xl mb-6 max-w-2xl relative z-10">
+          Your passwords are stored in encrypted form, making it easy to use
+          across multiple devices. Plus, our search functionality lets you find
+          your passwords effortlessly!
+        </p>
 
         {/* Call-to-action Button */}
         <button
-          className="btn bg-blue-500 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-blue-500/50 transform transition duration-300 ease-in-out hover:scale-110 active:scale-95 relative z-10"
+          className="btn bg-primary text-white px-8 py-4 rounded-full shadow-lg hover:shadow-blue-500/50 transform transition duration-300 ease-in-out hover:scale-110 active:scale-95 relative z-10"
           onClick={handleGetStarted}
         >
           Get Started for Free

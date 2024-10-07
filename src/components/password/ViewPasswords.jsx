@@ -27,24 +27,33 @@ const ViewPasswords = () => {
 
   const handleCopyClick = (event, value, isPasswordValue) => {
     event.preventDefault();
-    navigator.clipboard.writeText(value).then(
-      () => {
-        if (isPasswordValue) {
+    if (isPasswordValue) {
+      navigator.clipboard.writeText(value.password).then(
+        () => {
           successToast(
             `Password for ${value?.platformName} Copied to clipboard`
           );
-        } else {
-          successToast(
-            `${value.username ? "Username" : "Email"} for ${
-              value?.platformName
-            } copied to clipboard`
-          );
+        },
+        (err) => {
+          errorToast("Failed to copy to clipboard");
         }
-      },
-      (err) => {
-        errorToast("Failed to copy to clipboard");
-      }
-    );
+      );
+    } else {
+      navigator.clipboard
+        .writeText(value.username ? value.username : value.email)
+        .then(
+          () => {
+            successToast(
+              `${value.username ? "Username" : "Email"} for ${
+                value?.platformName
+              } copied to clipboard`
+            );
+          },
+          (err) => {
+            errorToast("Failed to copy to clipboard");
+          }
+        );
+    }
   };
 
   if (loading) {
@@ -109,7 +118,11 @@ const ViewPasswords = () => {
                 <th>{index + 1}</th>
                 <td>{password.platformName ? password.platformName : "-"}</td>
                 <td>
-                  <a className="hover:underline">
+                  <a
+                    className="hover:underline"
+                    href={password.platformUrl}
+                    target="_blank"
+                  >
                     {password.platformUrl ? password.platformUrl : "-"}
                   </a>
                 </td>
