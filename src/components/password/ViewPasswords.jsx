@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import { FaCopy } from "react-icons/fa6";
 import { errorToast, successToast } from "../../utils/toastMessage";
 import formatUrl from "../../utils/formatUrl";
+import PasswordModal from "../modals/PasswordModal";
 
 const ViewPasswords = () => {
   const [loading, setLoading] = useState(true);
   const [allPasswords, setAllPasswords] = useState(null);
   const [error, setError] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [modalPassword, setModalPassword] = useState(null);
   const loaderRows = 5;
 
   useEffect(() => {
@@ -26,8 +29,15 @@ const ViewPasswords = () => {
     fetchData();
   }, []);
 
+  const openPasswordModal = (e, password) => {
+    e.preventDefault();
+    setShowPasswordModal(true);
+    setModalPassword(password);
+  };
+
   const handleCopyClick = (event, value, isPasswordValue) => {
     event.preventDefault();
+    event.stopPropagation();
     if (isPasswordValue) {
       navigator.clipboard.writeText(value.password).then(
         () => {
@@ -101,9 +111,13 @@ const ViewPasswords = () => {
   }
 
   return (
-    <div className="w-screen flex justify-center">
-      <div className="overflow-x-auto w-full max-w-4xl">
-        <table className="table-hover table w-full">
+    <div className="w-screen flex flex-col items-center px-4">
+      <div
+        className={`overflow-x-auto w-full max-w-4xl ${
+          showPasswordModal ? "blur-lg tab-disabled" : ""
+        }`}
+      >
+        <table className="table-hover table w-full mt-4">
           <thead>
             <tr>
               <th className="px-4 py-2">Sr. No.</th>
@@ -115,7 +129,13 @@ const ViewPasswords = () => {
           </thead>
           <tbody>
             {allPasswords?.map((password, index) => (
-              <tr key={index}>
+              <tr
+                key={index}
+                onClick={(e) => {
+                  openPasswordModal(e, password);
+                }}
+                className="cursor-pointer"
+              >
                 <th className="px-4 py-2">{index + 1}</th>
                 <td className="px-4 py-2">{password.platformName || "-"}</td>
                 <td className="px-4 py-2">
@@ -124,6 +144,7 @@ const ViewPasswords = () => {
                     href={formatUrl(password.platformUrl)}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     {password.platformUrl || "-"}
                   </a>
@@ -151,6 +172,12 @@ const ViewPasswords = () => {
           </tbody>
         </table>
       </div>
+      {showPasswordModal && (
+        <PasswordModal
+          password={modalPassword}
+          setShowPasswordModal={setShowPasswordModal}
+        />
+      )}
     </div>
   );
 };
