@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaCopy } from "react-icons/fa6";
 import { errorToast, successToast } from "../../utils/toastMessage";
+import formatUrl from "../../utils/formatUrl";
 
 const ViewPasswords = () => {
   const [loading, setLoading] = useState(true);
@@ -120,8 +121,9 @@ const ViewPasswords = () => {
                 <td>
                   <a
                     className="hover:underline"
-                    href={password.platformUrl}
+                    href={formatUrl(password.platformUrl)}
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {password.platformUrl ? password.platformUrl : "-"}
                   </a>
