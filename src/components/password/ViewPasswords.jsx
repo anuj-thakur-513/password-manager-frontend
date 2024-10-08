@@ -101,35 +101,35 @@ const ViewPasswords = () => {
   }
 
   return (
-    <div>
-      <div className="w-screen flex justify-center">
-        <table className="table-hover w-full max-w-4xl table">
+    <div className="w-screen flex justify-center">
+      <div className="overflow-x-auto w-full max-w-4xl">
+        <table className="table-hover table w-full">
           <thead>
             <tr>
-              <th>Sr. No.</th>
-              <th>Platform Name</th>
-              <th>Platform Website</th>
-              <th>Username/Email</th>
-              <th>Password</th>
+              <th className="px-4 py-2">Sr. No.</th>
+              <th className="px-4 py-2">Platform Name</th>
+              <th className="px-4 py-2">Platform Website</th>
+              <th className="px-4 py-2">Username/Email</th>
+              <th className="px-4 py-2">Password</th>
             </tr>
           </thead>
           <tbody>
             {allPasswords?.map((password, index) => (
               <tr key={index}>
-                <th>{index + 1}</th>
-                <td>{password.platformName ? password.platformName : "-"}</td>
-                <td>
+                <th className="px-4 py-2">{index + 1}</th>
+                <td className="px-4 py-2">{password.platformName || "-"}</td>
+                <td className="px-4 py-2">
                   <a
-                    className="hover:underline"
+                    className="hover:underline text-blue-600"
                     href={formatUrl(password.platformUrl)}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {password.platformUrl ? password.platformUrl : "-"}
+                    {password.platformUrl || "-"}
                   </a>
                 </td>
-                <td className="relative group">
-                  {password.username ? password.username : password.email}
+                <td className="px-4 py-2 relative group">
+                  {password.username || password.email}
                   <span
                     className="absolute inset-y-0 right-4 inline-flex items-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={(e) => handleCopyClick(e, password, false)}
@@ -137,8 +137,8 @@ const ViewPasswords = () => {
                     <FaCopy />
                   </span>
                 </td>
-                <td className="relative group">
-                  {password?.password}
+                <td className="px-4 py-2 relative group">
+                  {password.password}
                   <span
                     className="absolute inset-y-0 right-4 inline-flex items-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={(e) => handleCopyClick(e, password, true)}
