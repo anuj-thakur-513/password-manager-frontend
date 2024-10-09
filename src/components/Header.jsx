@@ -59,7 +59,6 @@ const Header = () => {
                   )}
                 </label>
                 <div className="dropdown-menu dropdown-menu-bottom-left">
-                  <a className="dropdown-item text-sm">Profile</a>
                   <a
                     tabIndex="-1"
                     className="dropdown-item text-sm"

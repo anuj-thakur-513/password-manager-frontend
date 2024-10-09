@@ -4,13 +4,16 @@ import { FaCopy } from "react-icons/fa6";
 import { errorToast, successToast } from "../../utils/toastMessage";
 import formatUrl from "../../utils/formatUrl";
 import PasswordModal from "../modals/PasswordModal";
+import { SearchIcon } from "lucide-react";
 
 const ViewPasswords = () => {
   const [loading, setLoading] = useState(true);
   const [allPasswords, setAllPasswords] = useState(null);
   const [error, setError] = useState(null);
+  const [searchError, setSearchError] = useState(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [modalPassword, setModalPassword] = useState(null);
+  const [searchValue, setSearchValue] = useState(null);
   const loaderRows = 5;
 
   useEffect(() => {
@@ -67,9 +70,66 @@ const ViewPasswords = () => {
     }
   };
 
+  const handleSearch = async () => {
+    const enteredSearch = searchValue;
+    if (!searchValue) {
+      return;
+    }
+    setLoading(true);
+    setSearchError(null);
+
+    try {
+      const res = await axios.get(`/api/v1/password/${searchValue}`);
+      if (res.status === 200 && res?.data?.data?.length > 0) {
+        setAllPasswords(res?.data?.data);
+      } else if (res.status === 200 && res?.data?.data?.length === 0) {
+        throw new Error("No Passwords Found");
+      }
+    } catch (e) {
+      if (e.message === "No Passwords Found") {
+        setSearchError("No Passwords Found");
+      } else {
+        setSearchError("Error searching Passwords");
+      }
+    } finally {
+      setSearchValue(enteredSearch);
+      setLoading(false);
+    }
+  };
+
+  const handleReset = async () => {
+    setLoading(true);
+    setSearchValue(null);
+    setSearchError(null);
+    setError(null);
+    try {
+      const res = await axios.get("/api/v1/password/all");
+      if (res.status === 200) {
+        setAllPasswords(res?.data?.data);
+      }
+    } catch (error) {
+      setError("Error fetching Passwords");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="w-screen flex justify-center">
+      <div className="w-screen flex flex-col items-center px-4">
+        <div className="w-full flex justify-center form-control mb-4">
+          <input className="input" placeholder="Search Platform" />
+          <span className=" inline-flex items-center cursor-pointer">
+            <SearchIcon />
+          </span>
+          <button
+            className={`btn btn-error rounded-md ml-3 ${
+              (loading || !searchValue) && "tab-disabled bg-gray-500 text-black"
+            }`}
+          >
+            Reset
+          </button>
+        </div>
         <table className="table w-full max-w-4xl">
           <thead>
             <tr>
@@ -113,6 +173,42 @@ const ViewPasswords = () => {
   return (
     <div className="w-screen flex flex-col items-center px-4">
       <div
+        className={`flex flex-col items-center w-screen ${
+          showPasswordModal ? "blur-lg tab-disabled" : ""
+        }`}
+      >
+        <div className="w-full form-control justify-center px-4">
+          <input
+            className="input"
+            placeholder="Search Platform"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyUp={(e) => {
+              e.key === "Enter" && handleSearch();
+            }}
+          />
+          <span
+            className={`inline-flex items-center cursor-pointer ${
+              loading && "tab-disabled"
+            }`}
+            onClick={() => {
+              handleSearch();
+            }}
+          >
+            <SearchIcon />
+          </span>
+          <button
+            className={`btn btn-error rounded-md ml-3 ${
+              (loading || !searchValue) && "tab-disabled bg-gray-500 text-black"
+            }`}
+            onClick={handleReset}
+          >
+            Reset
+          </button>
+        </div>
+        {searchError && <h3 className="text-red-500 mt-4">⚠️ {searchError}</h3>}
+      </div>
+      <div
         className={`overflow-x-auto w-full max-w-4xl ${
           showPasswordModal ? "blur-lg tab-disabled" : ""
         }`}
@@ -140,8 +236,12 @@ const ViewPasswords = () => {
                 <td className="px-4 py-2">{password.platformName || "-"}</td>
                 <td className="px-4 py-2">
                   <a
-                    className="hover:underline text-blue-600"
-                    href={formatUrl(password.platformUrl)}
+                    className={`${
+                      password.platformUrl && "hover:underline text-blue-600"
+                    }`}
+                    href={
+                      password.platformUrl && formatUrl(password.platformUrl)
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
