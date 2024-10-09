@@ -27,7 +27,7 @@ const ViewPasswords = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [showPasswordModal]);
 
   const openPasswordModal = (e, password) => {
     e.preventDefault();
