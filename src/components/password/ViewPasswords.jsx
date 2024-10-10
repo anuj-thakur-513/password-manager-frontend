@@ -89,6 +89,7 @@ const ViewPasswords = () => {
       const res = await axios.get(`/api/v1/password/${searchValue}`);
       if (res.status === 200 && res?.data?.data?.length > 0) {
         setAllPasswords(res?.data?.data);
+        setTotalPages(1);
       } else if (res.status === 200 && res?.data?.data?.length === 0) {
         throw new Error("No Passwords Found");
       }
