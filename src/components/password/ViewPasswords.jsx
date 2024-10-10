@@ -1,14 +1,17 @@
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import { FaCopy } from "react-icons/fa6";
+import { BiSolidLeftArrow, BiSolidRightArrow } from "react-icons/bi";
+import { SearchIcon } from "lucide-react";
 import { errorToast, successToast } from "../../utils/toastMessage";
 import formatUrl from "../../utils/formatUrl";
 import PasswordModal from "../modals/PasswordModal";
-import { SearchIcon } from "lucide-react";
 
 const ViewPasswords = () => {
   const [loading, setLoading] = useState(true);
   const [allPasswords, setAllPasswords] = useState(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState(null);
   const [searchError, setSearchError] = useState(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -17,20 +20,24 @@ const ViewPasswords = () => {
   const loaderRows = 5;
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.get("/api/v1/password/all");
-        if (res.status === 200) {
-          setAllPasswords(res?.data?.data);
-        }
-      } catch (error) {
-        setError("Error fetching Passwords");
-      } finally {
-        setLoading(false);
+    fetchData(currentPage);
+  }, [currentPage, showPasswordModal]);
+
+  const fetchData = async (page) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get(`/api/v1/password/all?page=${page}`);
+      if (res.status === 200) {
+        setAllPasswords(res?.data?.data?.data);
+        setTotalPages(res?.data?.data?.totalPages);
       }
-    };
-    fetchData();
-  }, [showPasswordModal]);
+    } catch (error) {
+      setError("Error fetching Passwords");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const openPasswordModal = (e, password) => {
     e.preventDefault();
@@ -102,16 +109,82 @@ const ViewPasswords = () => {
     setSearchValue(null);
     setSearchError(null);
     setError(null);
-    try {
-      const res = await axios.get("/api/v1/password/all");
-      if (res.status === 200) {
-        setAllPasswords(res?.data?.data);
-      }
-    } catch (error) {
-      setError("Error fetching Passwords");
-    } finally {
-      setLoading(false);
+    setCurrentPage(1);
+    fetchData(1);
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
     }
+  };
+
+  const Pagination = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 4;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <div className="flex items-center justify-center space-x-2 mt-5">
+        <button
+          className="btn btn-sm btn-circle"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          <BiSolidLeftArrow />
+        </button>
+        {startPage > 1 && (
+          <>
+            <button className="btn btn-sm" onClick={() => handlePageChange(1)}>
+              1
+            </button>
+            {startPage > 2 && (
+              <span className="btn btn-sm btn-disabled">...</span>
+            )}
+          </>
+        )}
+        {pageNumbers.map((number) => (
+          <button
+            key={number}
+            className={`btn btn-sm ${
+              currentPage === number ? "btn-primary" : ""
+            }`}
+            onClick={() => handlePageChange(number)}
+          >
+            {number}
+          </button>
+        ))}
+        {endPage < totalPages && (
+          <>
+            {endPage < totalPages - 1 && (
+              <span className="btn btn-sm btn-disabled">...</span>
+            )}
+            <button
+              className="btn btn-sm"
+              onClick={() => handlePageChange(totalPages)}
+            >
+              {totalPages}
+            </button>
+          </>
+        )}
+        <button
+          className="btn btn-sm btn-circle"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          <BiSolidRightArrow />
+        </button>
+      </div>
+    );
   };
 
   if (loading) {
@@ -119,7 +192,7 @@ const ViewPasswords = () => {
       <div className="w-screen flex flex-col items-center px-4">
         <div className="w-full flex justify-center form-control mb-4">
           <input className="input" placeholder="Search Platform" />
-          <span className=" inline-flex items-center cursor-pointer">
+          <span className="inline-flex items-center cursor-pointer">
             <SearchIcon />
           </span>
           <button
@@ -278,6 +351,7 @@ const ViewPasswords = () => {
           setShowPasswordModal={setShowPasswordModal}
         />
       )}
+      {totalPages > 1 && <Pagination />}
     </div>
   );
 };
