@@ -11,7 +11,7 @@ import Home from "./pages/Home";
 // Lazy load
 const Auth = lazy(() => import("./pages/Auth"));
 
-axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+axios.defaults.baseURL = "https://api.password-manager.anuj-thakur.com";
 axios.defaults.withCredentials = true;
 
 function App() {
