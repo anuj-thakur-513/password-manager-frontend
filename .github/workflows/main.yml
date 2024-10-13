@@ -23,10 +23,8 @@ jobs:
             git stash
             git pull origin main
             
-            # Source nvm and set the PATH for npm and pm2
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            export PATH="/home/ubuntu/.nvm/versions/node/v20.18.0/bin:$PATH"
+            PATH="/home/ubuntu/.nvm/versions/node/v20.18.0/bin:$PATH" npm install
+            PATH="/home/ubuntu/.nvm/versions/node/v20.18.0/bin:$PATH" npm run build
 
             git stash pop
             npm install
