@@ -20,7 +20,9 @@ const ViewPasswords = () => {
   const loaderRows = 5;
 
   useEffect(() => {
-    fetchData(currentPage);
+    if (!showPasswordModal) {
+      fetchData(currentPage);
+    }
   }, [currentPage, showPasswordModal]);
 
   const fetchData = async (page) => {
@@ -41,8 +43,8 @@ const ViewPasswords = () => {
 
   const openPasswordModal = (e, password) => {
     e.preventDefault();
-    setShowPasswordModal(true);
     setModalPassword(password);
+    setShowPasswordModal(true);
   };
 
   const handleCopyClick = (event, value, isPasswordValue) => {
@@ -346,13 +348,13 @@ const ViewPasswords = () => {
           </tbody>
         </table>
       </div>
+      {totalPages > 1 && <Pagination />}
       {showPasswordModal && (
         <PasswordModal
           password={modalPassword}
           setShowPasswordModal={setShowPasswordModal}
         />
       )}
-      {totalPages > 1 && <Pagination />}
     </div>
   );
 };
