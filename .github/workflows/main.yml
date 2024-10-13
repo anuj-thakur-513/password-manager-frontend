@@ -23,8 +23,8 @@ jobs:
             git stash
             git pull origin main
             
-            PATH="/home/ubuntu/.nvm/versions/node/v20.18.0/bin:$PATH" npm install
-            PATH="/home/ubuntu/.nvm/versions/node/v20.18.0/bin:$PATH" npm run build
+            npm install
+            npm run build
 
             git stash pop
             npm install
