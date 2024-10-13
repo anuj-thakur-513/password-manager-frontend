@@ -102,9 +102,16 @@ const OtpForm = ({
   const handleResend = async () => {
     if (!isResendDisabled) {
       try {
-        const res = await axios.post("/api/v1/user/generateOtp", {
-          isVerificationEmail,
-        });
+        let res;
+        if (isVerificationEmail) {
+          await axios.post("/api/v1/user/generateOtp", {
+            isVerificationEmail,
+          });
+        } else {
+          await axios.post("/api/v1/user/generate-reset-otp", {
+            email: email,
+          });
+        }
         if (res.status === 200) {
           setError(null);
         }
