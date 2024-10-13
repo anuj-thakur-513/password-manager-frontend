@@ -1,4 +1,4 @@
-name: Password Manager Backend
+name: Password Manager Frontend
 
 on:
   push:
@@ -17,19 +17,24 @@ jobs:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       - name: Deploy to EC2
+        env:
+          EC2_IP: ${{ secrets.EC2_IP }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_IP }} << 'EOF'
-            cd password-manager-frontend
+          ssh -o StrictHostKeyChecking=no ubuntu@$EC2_IP << 'EOF'
+            cd ~/password-manager-frontend
+            git fetch origin main
             git stash
+            git checkout main
             git pull origin main
-            
-            npm install
-            npm run build
+            git stash pop || true
 
-            git stash pop
-            npm install
+            # Load NVM and use the correct Node.js version
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 20.18.0 || nvm install 20.18.0
+
+            npm ci
             npm run build
-            sudo cp -R dist/ /var/www/frontend
-            sudo systemctl daemon-reload
+            sudo cp -R dist/* /var/www/frontend/
             sudo systemctl restart nginx
           EOF
