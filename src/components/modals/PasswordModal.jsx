@@ -115,12 +115,10 @@ const PasswordModal = ({ password, setShowPasswordModal }) => {
               <label htmlFor="username">Username/Email</label>
               <input
                 id="username"
-                className={`p-2 border rounded-md ${
-                  !isEditing && "tab-disabled"
-                }`}
+                className={"p-2 border rounded-md tab-disabled"}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                readOnly={!isEditing}
+                readOnly
               />
             </div>
           )}
