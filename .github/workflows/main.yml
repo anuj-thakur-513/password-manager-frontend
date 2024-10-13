@@ -32,5 +32,6 @@ jobs:
             npm install
             npm run build
             sudo cp -R dist /var/www/frontend
+            sudo systemctl daemon-reload
             sudo systemctl restart nginx
           EOF
